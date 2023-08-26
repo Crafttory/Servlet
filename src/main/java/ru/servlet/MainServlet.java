@@ -1,13 +1,13 @@
 package ru.servlet;
 
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import ru.config.JavaConfig;
 import ru.controller.PostController;
-import ru.repository.PostRepository;
-import ru.service.PostService;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.List;
+
 
 public class MainServlet extends HttpServlet {
     private PostController controller;
@@ -20,9 +20,8 @@ public class MainServlet extends HttpServlet {
 
     @Override
     public void init() {
-        final var repository = new PostRepository();
-        final var service = new PostService(repository);
-        controller = new PostController(service);
+        var context = new AnnotationConfigApplicationContext("ru.config");
+        controller = (PostController) context.getBean("postController");
     }
 
     @Override
@@ -53,10 +52,8 @@ public class MainServlet extends HttpServlet {
                 return;
             }
             resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
-        } catch(
-                Exception e)
-
-        {
+        } catch (
+                Exception e) {
             e.printStackTrace();
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
